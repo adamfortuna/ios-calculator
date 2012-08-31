@@ -14,4 +14,7 @@
 -(double)performOperation:(NSString *)operation;
 -(void)reset;
 
+// Assignment 1 EC1 - "Backspace"
+-(double)popOperand;
+
 @end

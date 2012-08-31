@@ -15,10 +15,10 @@
 @end
 
 @implementation CalculatorViewController
+
 @synthesize display;
 @synthesize activity = _activity;
 @synthesize userIsInTheMiddleOfEnterANumber;
-
 @synthesize brain = _brain;
 
 -(CalculatorBrain *) brain {
@@ -26,12 +26,24 @@
     return _brain;
 }
 
+// Assignment 1-4 - Add ability to track activity
 - (void)addToActivity:(NSString *)activity isOperand:(Boolean)isAnOperand {
     NSString *addedActivity = activity;
     if(isAnOperand) {
      addedActivity = [NSString stringWithFormat:@" %@ ", activity];
     }
-    self.activity.text = [self.activity.text stringByAppendingString:addedActivity];
+    
+    // If the last activity added was a space, don't add another space
+    NSUInteger length = [self.activity.text length];
+    NSString *lastActivity;
+    if(length > 0) {
+        lastActivity = [self.activity.text substringFromIndex:length-1];
+    }
+    NSLog(@"last activity: %@", lastActivity);
+    NSLog(@"addedActivity: %@", addedActivity);
+    if(!([lastActivity isEqualToString:@" "] && [addedActivity isEqualToString:@" "])) {
+        self.activity.text = [self.activity.text stringByAppendingString:addedActivity];
+    }
 }
 
 - (IBAction)digitPressed:(UIButton *)sender {
@@ -46,6 +58,7 @@
     }
 }
 
+// Assignment 1-2 - Add ability to use a decimal
 - (IBAction)decimalPressed {
     NSRange range = [self.display.text rangeOfString:@"."];
     if (range.location == NSNotFound) {
@@ -61,7 +74,7 @@
 }
 
 - (IBAction)enterPressed {
-    [self addToActivity:@"" isOperand:TRUE];
+    [self addToActivity:@" " isOperand:FALSE];
     [self.brain pushOperand:[self.display.text doubleValue]];
     self.userIsInTheMiddleOfEnterANumber = NO;
 }
@@ -76,6 +89,7 @@
     self.display.text = [NSString stringWithFormat:@"%g", result];
 }
 
+// Assignment 1-5 - "Clear" button to reset calculator
 - (IBAction)clearPressed {
     [self.brain reset];
     self.userIsInTheMiddleOfEnterANumber = FALSE;
@@ -86,4 +100,33 @@
     [self setActivity:nil];
     [super viewDidUnload];
 }
+
+
+#pragma mark
+#pragma Extra Credit
+
+// Assignment 1 EC1 - "Backspace" button
+- (IBAction)backspace {
+    [self.brain popOperand];
+    
+    // Adjust Display
+    NSUInteger length = [self.display.text length];
+    if(length > 0) {
+        self.display.text = [self.display.text substringToIndex:(length-1)];
+    }
+    
+    // Adjust Activity
+    length = [self.activity.text length];
+    if(length > 0) {
+        self.activity.text = [self.activity.text substringToIndex:(length-1)];
+    }
+    
+    // If no digits, no number in progress
+    if([self.display.text length] == 0) {
+        self.userIsInTheMiddleOfEnterANumber = FALSE;
+    }
+}
+
+
+
 @end

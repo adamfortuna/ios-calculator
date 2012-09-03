@@ -27,28 +27,28 @@
 }
 
 // Assignment 1-4 - Add ability to track activity
-- (void)addToActivity:(NSString *)activity isOperand:(Boolean)isAnOperand {
-    NSString *addedActivity = activity;
-    if(isAnOperand) {
-     addedActivity = [NSString stringWithFormat:@" %@ ", activity];
+- (void)addToActivity:(NSString *)activity {
+    // Remove the "=" from the end of the activity string if there is one
+    NSRange range = [self.activity.text rangeOfString:@"="];
+    if (range.location != NSNotFound) {
+        self.activity.text = [self.activity.text substringToIndex:range.location-1];
     }
-    
+
     // If the last activity added was a space, don't add another space
     NSUInteger length = [self.activity.text length];
     NSString *lastActivity;
     if(length > 0) {
         lastActivity = [self.activity.text substringFromIndex:length-1];
     }
-    NSLog(@"last activity: %@", lastActivity);
-    NSLog(@"addedActivity: %@", addedActivity);
-    if(!([lastActivity isEqualToString:@" "] && [addedActivity isEqualToString:@" "])) {
-        self.activity.text = [self.activity.text stringByAppendingString:addedActivity];
+
+    if(!([lastActivity isEqualToString:@" "] && [activity isEqualToString:@" "])) {
+        self.activity.text = [self.activity.text stringByAppendingString:activity];
     }
 }
 
 - (IBAction)digitPressed:(UIButton *)sender {
     NSString *digit = [sender currentTitle];
-    [self addToActivity:digit isOperand:FALSE];
+    [self addToActivity:digit];
     
     if(self.userIsInTheMiddleOfEnterANumber) {
         self.display.text = [self.display.text stringByAppendingString:digit];
@@ -64,17 +64,18 @@
     if (range.location == NSNotFound) {
         self.display.text = [self.display.text stringByAppendingString:@"."];
 
-        if(self.userIsInTheMiddleOfEnterANumber) {
-            [self addToActivity:@"." isOperand:FALSE];
-        } else {
+        NSString *activity = @".";
+        if(!self.userIsInTheMiddleOfEnterANumber) {
             self.userIsInTheMiddleOfEnterANumber = TRUE;
-            [self addToActivity:@"0." isOperand:FALSE];
+            activity = @"0.";
         }
+        [self addToActivity:activity];
     }
 }
 
+// Assignment 1 EC2 - Add an "=" sign when hitting enter
 - (IBAction)enterPressed {
-    [self addToActivity:@" " isOperand:FALSE];
+    [self addToActivity:@" "];
     [self.brain pushOperand:[self.display.text doubleValue]];
     self.userIsInTheMiddleOfEnterANumber = NO;
 }
@@ -84,7 +85,8 @@
         [self enterPressed];
     }
     NSString *operation = [sender currentTitle];
-    [self addToActivity:operation isOperand:TRUE];
+    [self addToActivity:[NSString stringWithFormat:@" %@ ", operation]];
+    [self addToActivity:@" = "];
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g", result];
 }
@@ -96,37 +98,77 @@
     self.display.text = @"0";
     self.activity.text = @"";
 }
+
 - (void)viewDidUnload {
     [self setActivity:nil];
     [super viewDidUnload];
 }
 
 
-#pragma mark
-#pragma Extra Credit
+#pragma mark Extra Credit
 
 // Assignment 1 EC1 - "Backspace" button
 - (IBAction)backspace {
-    [self.brain popOperand];
-    
-    // Adjust Display
-    NSUInteger length = [self.display.text length];
-    if(length > 0) {
-        self.display.text = [self.display.text substringToIndex:(length-1)];
-    }
-    
-    // Adjust Activity
-    length = [self.activity.text length];
-    if(length > 0) {
-        self.activity.text = [self.activity.text substringToIndex:(length-1)];
-    }
-    
-    // If no digits, no number in progress
-    if([self.display.text length] == 0) {
-        self.userIsInTheMiddleOfEnterANumber = FALSE;
+    if(self.userIsInTheMiddleOfEnterANumber) {
+        [self.brain popOperand];
+        
+        // Adjust Display
+        NSUInteger length = [self.display.text length];
+        if(length > 0) {
+            self.display.text = [self.display.text substringToIndex:(length-1)];
+        }
+        
+        // Adjust Activity
+        length = [self.activity.text length];
+        if(length > 0) {
+            self.activity.text = [self.activity.text substringToIndex:(length-1)];
+        }
+        
+        // If no digits, no number in progress
+        if([self.display.text length] == 0) {
+            self.userIsInTheMiddleOfEnterANumber = FALSE;
+        }
+    } else {
+        // There is nothing to backspace, show an alert
+        UIAlertView *alert = [[UIAlertView alloc]
+                              initWithTitle:@"Uh Oh!"
+                              message:@"You can only backspace digits, and you're not currently entering anything!"
+                              delegate:nil
+                              cancelButtonTitle: @"OK"
+                              otherButtonTitles:nil,
+                              nil];
+        [alert show];
     }
 }
 
+// Assignment 1 EC2 - "Change Sign" button
+- (IBAction)changeSignPressed {
+    
+    /*
+     If the user is in the middle of entering a number,
+     change the sign on the current number.
+    */
+    if(self.userIsInTheMiddleOfEnterANumber) {
+        NSRange range = [self.display.text rangeOfString:@"-"];
+        NSString *newDisplay;
+        // Currently positive, should make it negative
+        if (range.location == NSNotFound) {
+            newDisplay = [NSString stringWithFormat:@"-%@", self.display.text];
+        } else { // Currently negative, should make positive
+            newDisplay = [self.display.text substringFromIndex:1];
+        }
+        
+        // Update activity
+        NSInteger activityLength = [self.activity.text length],
+                  displayLength = [self.display.text length];
+        NSString *newActivity = [self.activity.text substringToIndex:(activityLength - displayLength)];
+        self.activity.text = [newActivity stringByAppendingString:newDisplay];
+
+        self.display.text = newDisplay;
+    } else {
+        NSLog(@"Todo: change sign pressed not in the middle of entering a number.");
+    }
+}
 
 
 @end

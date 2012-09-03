@@ -80,15 +80,20 @@
     self.userIsInTheMiddleOfEnterANumber = NO;
 }
 
-- (IBAction)operationPressed:(UIButton *)sender {
-    if(self.userIsInTheMiddleOfEnterANumber) {
-        [self enterPressed];
-    }
-    NSString *operation = [sender currentTitle];
+
+- (void)performOperation:(NSString *)operation {
     [self addToActivity:[NSString stringWithFormat:@" %@ ", operation]];
     [self addToActivity:@" = "];
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g", result];
+    
+}
+
+- (IBAction)operationPressed:(UIButton *)sender {
+    if(self.userIsInTheMiddleOfEnterANumber) {
+        [self enterPressed];
+    }
+    [self performOperation:sender.currentTitle];
 }
 
 // Assignment 1-5 - "Clear" button to reset calculator
@@ -167,6 +172,7 @@
         self.display.text = newDisplay;
     } else {
         NSLog(@"Todo: change sign pressed not in the middle of entering a number.");
+        [self performOperation:@"+/-"];
     }
 }
 

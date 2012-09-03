@@ -58,8 +58,10 @@
         result = log([self popOperand]);
     } else if([operation isEqualToString:@"π"]) {
         result = log([self popOperand]);
+    } else if([operation isEqualToString:@"+/-"]) {
+        result = self.popOperand * -1;
     }
-    
+
     [self pushOperand:result];
     return result;
 }

@@ -114,9 +114,7 @@
 
 // Assignment 1 EC1 - "Backspace" button
 - (IBAction)backspace {
-    if(self.userIsInTheMiddleOfEnterANumber) {
-        [self.brain popOperand];
-        
+    if(self.userIsInTheMiddleOfEnterANumber) {        
         // Adjust Display
         NSUInteger length = [self.display.text length];
         if(length > 0) {

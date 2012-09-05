@@ -5,7 +5,7 @@
 //  Created by Adam Fortuna on 8/28/12.
 //  Copyright (c) 2012 Adam Fortuna. All rights reserved.
 //
-
+ 
 #import "CalculatorViewController.h"
 #import "CalculatorBrain.h"
 
@@ -48,8 +48,7 @@
 
 - (IBAction)digitPressed:(UIButton *)sender {
     NSString *digit = [sender currentTitle];
-    [self addToActivity:digit];
-    
+
     if(self.userIsInTheMiddleOfEnterANumber) {
         self.display.text = [self.display.text stringByAppendingString:digit];
     } else {
@@ -64,19 +63,18 @@
     if (range.location == NSNotFound) {
         self.display.text = [self.display.text stringByAppendingString:@"."];
 
-        NSString *activity = @".";
         if(!self.userIsInTheMiddleOfEnterANumber) {
             self.userIsInTheMiddleOfEnterANumber = TRUE;
-            activity = @"0.";
         }
-        [self addToActivity:activity];
     }
 }
 
 // Assignment 1 EC2 - Add an "=" sign when hitting enter
 - (IBAction)enterPressed {
+    [self addToActivity:self.display.text];
     [self addToActivity:@" "];
     [self.brain pushOperand:[self.display.text doubleValue]];
+    
     self.userIsInTheMiddleOfEnterANumber = NO;
 }
 
@@ -120,13 +118,7 @@
         if(length > 0) {
             self.display.text = [self.display.text substringToIndex:(length-1)];
         }
-        
-        // Adjust Activity
-        length = [self.activity.text length];
-        if(length > 0) {
-            self.activity.text = [self.activity.text substringToIndex:(length-1)];
-        }
-        
+
         // If no digits, no number in progress
         if([self.display.text length] == 0) {
             self.userIsInTheMiddleOfEnterANumber = FALSE;
@@ -152,24 +144,13 @@
      change the sign on the current number.
     */
     if(self.userIsInTheMiddleOfEnterANumber) {
-        NSRange range = [self.display.text rangeOfString:@"-"];
-        NSString *newDisplay;
-        // Currently positive, should make it negative
-        if (range.location == NSNotFound) {
-            newDisplay = [NSString stringWithFormat:@"-%@", self.display.text];
-        } else { // Currently negative, should make positive
-            newDisplay = [self.display.text substringFromIndex:1];
+        if ([self.display.text doubleValue] > 0) {
+            self.display.text = [@"-" stringByAppendingString:self.display.text];
         }
-        
-        // Update activity
-        NSInteger activityLength = [self.activity.text length],
-                  displayLength = [self.display.text length];
-        NSString *newActivity = [self.activity.text substringToIndex:(activityLength - displayLength)];
-        self.activity.text = [newActivity stringByAppendingString:newDisplay];
-
-        self.display.text = newDisplay;
+        else if ([self.display.text doubleValue] < 0) {
+            self.display.text = [self.display.text substringFromIndex:1];
+        }
     } else {
-        NSLog(@"Todo: change sign pressed not in the middle of entering a number.");
         [self performOperation:@"+/-"];
     }
 }

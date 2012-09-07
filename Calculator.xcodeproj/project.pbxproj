@@ -16,6 +16,8 @@
 		6676758815ED8DE50047CD0B /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6676758615ED8DE50047CD0B /* MainStoryboard.storyboard */; };
 		6676758B15ED8DE50047CD0B /* CalculatorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6676758A15ED8DE50047CD0B /* CalculatorViewController.m */; };
 		6676759315EDCE000047CD0B /* CalculatorBrain.m in Sources */ = {isa = PBXBuildFile; fileRef = 6676759215EDCE000047CD0B /* CalculatorBrain.m */; };
+		66FF8A3F15F6E40B00CF280A /* texturetastic_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = 66FF8A3D15F6E40B00CF280A /* texturetastic_gray.png */; };
+		66FF8A4015F6E40B00CF280A /* texturetastic_gray_@2X.png in Resources */ = {isa = PBXBuildFile; fileRef = 66FF8A3E15F6E40B00CF280A /* texturetastic_gray_@2X.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		6676758A15ED8DE50047CD0B /* CalculatorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CalculatorViewController.m; sourceTree = "<group>"; };
 		6676759115EDCE000047CD0B /* CalculatorBrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalculatorBrain.h; sourceTree = "<group>"; };
 		6676759215EDCE000047CD0B /* CalculatorBrain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalculatorBrain.m; sourceTree = "<group>"; };
+		66FF8A3D15F6E40B00CF280A /* texturetastic_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = texturetastic_gray.png; sourceTree = "<group>"; };
+		66FF8A3E15F6E40B00CF280A /* texturetastic_gray_@2X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "texturetastic_gray_@2X.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,12 +99,22 @@
 		6676757B15ED8DE50047CD0B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				66FF8A3C15F6E40B00CF280A /* assets */,
 				6676757C15ED8DE50047CD0B /* Calculator-Info.plist */,
 				6676757D15ED8DE50047CD0B /* InfoPlist.strings */,
 				6676758015ED8DE50047CD0B /* main.m */,
 				6676758215ED8DE50047CD0B /* Calculator-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		66FF8A3C15F6E40B00CF280A /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				66FF8A3D15F6E40B00CF280A /* texturetastic_gray.png */,
+				66FF8A3E15F6E40B00CF280A /* texturetastic_gray_@2X.png */,
+			);
+			path = assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -157,6 +171,8 @@
 			files = (
 				6676757F15ED8DE50047CD0B /* InfoPlist.strings in Resources */,
 				6676758815ED8DE50047CD0B /* MainStoryboard.storyboard in Resources */,
+				66FF8A3F15F6E40B00CF280A /* texturetastic_gray.png in Resources */,
+				66FF8A4015F6E40B00CF280A /* texturetastic_gray_@2X.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,6 +302,7 @@
 				6676759015ED8DE50047CD0B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

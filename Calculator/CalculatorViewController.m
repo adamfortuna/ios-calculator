@@ -107,6 +107,9 @@
     [super viewDidUnload];
 }
 
+-(void)viewDidLoad {
+    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"texturetastic_gray"]];
+}
 
 #pragma mark Extra Credit
 

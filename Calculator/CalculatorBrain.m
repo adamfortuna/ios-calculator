@@ -57,7 +57,7 @@
     } else if([operation isEqualToString:@"log"]) {
         result = log([self popOperand]);
     } else if([operation isEqualToString:@"π"]) {
-        result = 3.14159;
+        result = M_PI;
     } else if([operation isEqualToString:@"+/-"]) {
         result = self.popOperand * -1;
     }

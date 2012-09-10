@@ -49,13 +49,13 @@
         double divisor = [self popOperand];
         if(divisor) result = [self popOperand] / divisor;
     } else if([operation isEqualToString:@"sin"]) {
-        result = sin([self popOperand]);
+        result = sin([self popOperand] * M_PI / 180);
     } else if([operation isEqualToString:@"cos"]) {
-        result = cos([self popOperand]);
+        result = cos([self popOperand] * M_PI / 180);
     } else if([operation isEqualToString:@"sqrt"]) {
         result = sqrt([self popOperand]);
-    } else if([operation isEqualToString:@"log"]) {
-        result = log([self popOperand]);
+    } else if([operation isEqualToString:@"log2"]) {
+        result = log2([self popOperand]);
     } else if([operation isEqualToString:@"π"]) {
         result = M_PI;
     } else if([operation isEqualToString:@"+/-"]) {

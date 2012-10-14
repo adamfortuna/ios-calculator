@@ -13,4 +13,9 @@
 -(void)pushOperand:(double)operand;
 -(double)performOperation:(NSString *)operation;
 -(void)reset;
+
+@property (readonly) id program;
++(double)runProgram:(id)program;
++(NSString *)descritionOfProgram:(id)program;
+
 @end

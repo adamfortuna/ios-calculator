@@ -97,7 +97,9 @@
 }
 
 -(void)viewDidLoad {
+    [super viewDidLoad];
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"texturetastic_gray"]];
+    [self clearPressed];
 }
 
 #pragma mark Extra Credit
@@ -149,22 +151,9 @@
 
 
 
-// Assignment #2.3c, #2.3d
-- (IBAction)variablesUsed {
-    NSString *result = @"";
-    for(id key in self.testVariableValues) {
-        double value = [[self.testVariableValues objectForKey:key] doubleValue];
-        if(!value) value = 0;
-        NSString *addition = [NSString stringWithFormat:@"%@=%0.0f  ", key, value];
-        result = [result stringByAppendingString:addition];
-
-    }
-    self.variables.text = result;
-}
-
-
 // Assignment #2.3e
 - (IBAction)setVariables1 {
+    
     self.testVariableValues = [NSDictionary dictionaryWithObjectsAndKeys:   [NSNumber numberWithInt:3], @"x",
                            [NSNumber numberWithInt:4], @"y",
                            [NSNumber numberWithDouble:2.3], @"a",
@@ -186,7 +175,7 @@
     [self updateLabels];
 }
 
-
+// Assignment #2.3c, #2.3d
 - (void)updateLabels {
     self.activity.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
     double result = [CalculatorBrain runProgram:self.brain.program

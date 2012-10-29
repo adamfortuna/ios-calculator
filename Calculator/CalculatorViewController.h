@@ -8,8 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+static int const MAX_LENGTH_CALCULATIONLABEL = 35;
+static NSString *const DECIMAL_SEPARATOR = @".";
+
+
 @interface CalculatorViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UILabel *display;
 @property (weak, nonatomic) IBOutlet UILabel *activity;
+@property (weak, nonatomic) IBOutlet UILabel *variables;
 @end

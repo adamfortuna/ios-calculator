@@ -10,100 +10,89 @@
 #import "CalculatorBrain.h"
 
 @interface CalculatorViewController ()
-@property(nonatomic) BOOL userIsInTheMiddleOfEnterANumber;
+@property(nonatomic) BOOL isEnteringNewNumber;
 @property(nonatomic, strong) CalculatorBrain *brain;
+@property(nonatomic) NSMutableDictionary *testVariableValues;
 @end
 
 @implementation CalculatorViewController
 
 @synthesize display;
 @synthesize activity = _activity;
-@synthesize userIsInTheMiddleOfEnterANumber;
+@synthesize variables = _variables;
+@synthesize isEnteringNewNumber;
 @synthesize brain = _brain;
+@synthesize testVariableValues = _testVariableValues;
 
 -(CalculatorBrain *) brain {
     if(!_brain) _brain = [[CalculatorBrain alloc] init];
     return _brain;
 }
 
-// Assignment 1-4 - Add ability to track activity
-- (void)addToActivity:(NSString *)activity {
-    // Remove the "=" from the end of the activity string if there is one
-    NSRange range = [self.activity.text rangeOfString:@"="];
-    if (range.location != NSNotFound) {
-        self.activity.text = [self.activity.text substringToIndex:range.location-1];
+-(NSMutableDictionary *) testVariableValues {
+    if(!_testVariableValues) {
+        _testVariableValues = [[NSMutableDictionary alloc] init];
     }
-
-    // If the last activity added was a space, don't add another space
-    NSUInteger length = [self.activity.text length];
-    NSString *lastActivity;
-    if(length > 0) {
-        lastActivity = [self.activity.text substringFromIndex:length-1];
-    }
-
-    if(!([lastActivity isEqualToString:@" "] && [activity isEqualToString:@" "])) {
-        self.activity.text = [self.activity.text stringByAppendingString:activity];
-    }
+    return _testVariableValues;
 }
 
 - (IBAction)digitPressed:(UIButton *)sender {
-    NSString *digit = [sender currentTitle];
-
-    if(self.userIsInTheMiddleOfEnterANumber) {
-        self.display.text = [self.display.text stringByAppendingString:digit];
-    } else {
-        self.userIsInTheMiddleOfEnterANumber = TRUE;
+    NSString *digit = sender.currentTitle;
+    if (self.isEnteringNewNumber) {
         self.display.text = digit;
+        self.isEnteringNewNumber = NO;
+    } else {
+        [self appendToResultLabel:digit];
     }
 }
 
 // Assignment 1-2 - Add ability to use a decimal
 - (IBAction)decimalPressed {
-    NSRange range = [self.display.text rangeOfString:@"."];
-    if (range.location == NSNotFound) {
-        self.display.text = [self.display.text stringByAppendingString:@"."];
-
-        if(!self.userIsInTheMiddleOfEnterANumber) {
-            self.userIsInTheMiddleOfEnterANumber = TRUE;
-        }
+    if (self.isEnteringNewNumber) {
+        self.display.text = @"0.";
+        self.isEnteringNewNumber = NO;
+    } else if ([self.display.text rangeOfString:DECIMAL_SEPARATOR].location == NSNotFound) {
+        [self appendToResultLabel:DECIMAL_SEPARATOR];
     }
+}
+
+- (void) updateActivity {
+    self.activity.text = [CalculatorBrain descriptionOfProgram:[self.brain program]];
 }
 
 // Assignment 1 EC2 - Add an "=" sign when hitting enter
 - (IBAction)enterPressed {
-    [self addToActivity:self.display.text];
-    [self addToActivity:@" "];
     [self.brain pushOperand:[self.display.text doubleValue]];
-    
-    self.userIsInTheMiddleOfEnterANumber = NO;
+    [self updateActivity];
+    self.isEnteringNewNumber = YES;
 }
 
-
 - (void)performOperation:(NSString *)operation {
-    [self addToActivity:[NSString stringWithFormat:@" %@ ", operation]];
-    [self addToActivity:@" = "];
     double result = [self.brain performOperation:operation];
+    [self updateActivity];
     self.display.text = [NSString stringWithFormat:@"%g", result];
     
 }
 
 - (IBAction)operationPressed:(UIButton *)sender {
-    if(self.userIsInTheMiddleOfEnterANumber) {
+    if (!self.isEnteringNewNumber) {
         [self enterPressed];
     }
-    [self performOperation:sender.currentTitle];
+    NSString *operation = sender.currentTitle;
+    [self.brain performOperation:operation];
+    [self updateLabels];
 }
 
 // Assignment 1-5 - "Clear" button to reset calculator
 - (IBAction)clearPressed {
-    [self.brain reset];
-    self.userIsInTheMiddleOfEnterANumber = FALSE;
-    self.display.text = @"0";
-    self.activity.text = @"";
+    self.isEnteringNewNumber = YES;
+    self.brain = [[CalculatorBrain alloc] init];
+    [self updateLabels];
 }
 
 - (void)viewDidUnload {
     [self setActivity:nil];
+    [self setVariables:nil];
     [super viewDidUnload];
 }
 
@@ -115,7 +104,7 @@
 
 // Assignment 1 EC1 - "Backspace" button
 - (IBAction)backspace {
-    if(self.userIsInTheMiddleOfEnterANumber) {        
+    if(!self.isEnteringNewNumber) {
         // Adjust Display
         NSUInteger length = [self.display.text length];
         if(length > 0) {
@@ -124,7 +113,7 @@
 
         // If no digits, no number in progress
         if([self.display.text length] == 0) {
-            self.userIsInTheMiddleOfEnterANumber = FALSE;
+            self.isEnteringNewNumber = TRUE;
         }
     } else {
         // There is nothing to backspace, show an alert
@@ -146,7 +135,7 @@
      If the user is in the middle of entering a number,
      change the sign on the current number.
     */
-    if(self.userIsInTheMiddleOfEnterANumber) {
+    if(!self.isEnteringNewNumber) {
         if ([self.display.text doubleValue] > 0) {
             self.display.text = [@"-" stringByAppendingString:self.display.text];
         }
@@ -158,5 +147,62 @@
     }
 }
 
+
+
+// Assignment #2.3c, #2.3d
+- (IBAction)variablesUsed {
+    NSString *result = @"";
+    for(id key in self.testVariableValues) {
+        double value = [[self.testVariableValues objectForKey:key] doubleValue];
+        if(!value) value = 0;
+        NSString *addition = [NSString stringWithFormat:@"%@=%0.0f  ", key, value];
+        result = [result stringByAppendingString:addition];
+
+    }
+    self.variables.text = result;
+}
+
+
+// Assignment #2.3e
+- (IBAction)setVariables1 {
+    self.testVariableValues = [NSDictionary dictionaryWithObjectsAndKeys:   [NSNumber numberWithInt:3], @"x",
+                           [NSNumber numberWithInt:4], @"y",
+                           [NSNumber numberWithDouble:2.3], @"a",
+                           [NSNumber numberWithDouble:-5], @"b",
+                           nil];
+    [self updateLabels];
+}
+- (IBAction)setVariables2 {
+    self.testVariableValues = [NSDictionary dictionaryWithObjectsAndKeys:   [NSNumber numberWithInt:1], @"x",
+                           [NSNumber numberWithInt:0], @"y",
+                           [NSNumber numberWithDouble:-1], @"a",
+                           [NSNumber numberWithDouble:2], @"b",
+                           nil];
+    [self updateLabels];
+
+}
+- (IBAction)setVariablesNil {
+    self.testVariableValues = nil;
+    [self updateLabels];
+}
+
+
+- (void)updateLabels {
+    self.activity.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
+    double result = [CalculatorBrain runProgram:self.brain.program
+                                 usingVariables:self.testVariableValues];
+    self.display.text = [NSString stringWithFormat:@"%g", result];
+    
+    NSMutableArray* variableValuesTexts = [[NSMutableArray alloc] init];
+    for (NSString* usedVariable in [CalculatorBrain variablesUsedInProgram:self.brain.program]) {
+        [variableValuesTexts addObject:[NSString stringWithFormat:@"%@ = %g", usedVariable, [[self.testVariableValues objectForKey:usedVariable] doubleValue]]];
+    }
+    self.variables.text = [variableValuesTexts componentsJoinedByString:@", "];
+    
+}
+
+- (void)appendToResultLabel:(NSString *)suffix {
+    self.display.text = [self.display.text stringByAppendingString:suffix];
+}
 
 @end

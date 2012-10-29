@@ -44,6 +44,23 @@
     return [self.programStack copy];
 }
 
+
+#pragma mark -
+#pragma mark Description Of Program
+// Assignment #2
++ (NSString *)descriptionOfProgram:(id)program {
+    NSMutableArray *stack;
+    if ([program isKindOfClass:[NSArray class]]) {
+        stack = [program mutableCopy];
+    }
+    
+    NSMutableArray *expressions = [[NSMutableArray alloc] init];
+    while([stack count] > 0) {
+        [expressions insertObject:[self descriptionOfOperandOffStack:stack] atIndex:0];
+    }
+    return [expressions componentsJoinedByString:@", "];
+}
+
 + (NSString *)descriptionOfOperandOffStack:(NSMutableArray *)stack {
     id topOfStack = [stack lastObject];
     if (topOfStack) {
@@ -63,19 +80,20 @@
     return description;
 }
 
-+ (NSString *)descriptionOfProgram:(id)program {
+#pragma mark -
+#pragma mark Run Program
+
++ (double)runProgram:(id)program {
+    return [self runProgram:program usingVariables:nil];
+}
+
++ (double)runProgram:(id)program usingVariables:(NSDictionary *)variableValues {
     NSMutableArray *stack;
     if ([program isKindOfClass:[NSArray class]]) {
         stack = [program mutableCopy];
     }
-    
-    NSMutableArray *expressions = [[NSMutableArray alloc] init];
-    while([stack count] > 0) {
-        [expressions insertObject:[self descriptionOfOperandOffStack:stack] atIndex:0];
-    }
-    return [expressions componentsJoinedByString:@", "];
+    return [self popOperandOffStack:stack usingVariables:variableValues];
 }
-
 
 + (double)popOperandOffStack:(NSMutableArray *)stack
               usingVariables:(NSDictionary *)variableValues {
@@ -122,21 +140,10 @@
     return operationResult;
 }
 
-+ (double)runProgram:(id)program usingVariables:(NSDictionary *)variableValues {
-    NSMutableArray *stack;
-    if ([program isKindOfClass:[NSArray class]]) {
-        stack = [program mutableCopy];
-    }
-    return [self popOperandOffStack:stack usingVariables:variableValues];
-}
 
 
-+ (double)runProgram:(id)program {
-    return [self runProgram:program usingVariables:nil];
-}
-
-
-// Private stuff here
+#pragma mark -
+#pragma mark Internal Methods
 + (NSSet *)allowedOperators {
     return [NSSet setWithObjects:PLUS_OPERATOR, MIN_OPERATOR, TIMES_OPERATOR, DIVIDE_OPERATOR, PI_OPERATOR, SIN_OPERATOR, COS_OPERATOR, SQRT_OPERATOR, nil];
 }

@@ -56,20 +56,16 @@
     }
 }
 
-- (void) updateActivity {
-    self.activity.text = [CalculatorBrain descriptionOfProgram:[self.brain program]];
-}
-
 // Assignment 1 EC2 - Add an "=" sign when hitting enter
 - (IBAction)enterPressed {
     [self.brain pushOperand:[self.display.text doubleValue]];
-    [self updateActivity];
+    [self updateLabels];
     self.isEnteringNewNumber = YES;
 }
 
 - (void)performOperation:(NSString *)operation {
     double result = [self.brain performOperation:operation];
-    [self updateActivity];
+    [self updateLabels];
     self.display.text = [NSString stringWithFormat:@"%g", result];
     
 }
@@ -105,6 +101,7 @@
 #pragma mark Extra Credit
 
 // Assignment 1 EC1 - "Backspace" button
+// Also #2.4
 - (IBAction)backspace {
     if(!self.isEnteringNewNumber) {
         // Adjust Display
@@ -151,7 +148,7 @@
 
 
 
-// Assignment #2.3e
+// Assignment #2.3b, 2.3e
 - (IBAction)setVariables1 {
     
     self.testVariableValues = [NSDictionary dictionaryWithObjectsAndKeys:   [NSNumber numberWithInt:3], @"x",
